@@ -51,12 +51,12 @@ def login_view(request):
         login(request, login_user)
         print("Login Success")
 
-        return redirect('home')
+        return redirect('core:transactions')
     return render(request, 'authentication/login.html')
 
         
             
 
 def home(request):
-    return render(request, 'authentication/home.html')
+    return render(request, 'core/transactions.html')
         
