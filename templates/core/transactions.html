@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p>Hello - {{ user.username }}</p>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="amount" placeholder="amount"><br>
+        <input type="text" name="desc" placeholder="desc"><br>
+        <input type="date" name="date">
+        <button type="submit">Add Transaction</button>
+    </form>
+</body>
+</html>
