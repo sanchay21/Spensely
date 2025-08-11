@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spensely | {% block title %}{% endblock title %}</title>
+    
+    {% block styles %}
+        <!-- Example: <link rel="stylesheet" href="{% static 'css/main.css' %}"> -->
+    {% endblock styles %}
+</head>
+<body>
+    {% block content %}{% endblock content %}
+
+    {% block scripts %}
+        <!-- Example: <script src="{% static 'js/main.js' %}"></script> -->
+    {% endblock scripts %}
+</body>
+</html>

@@ -1,18 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <p>Hello - {{ user.username }}</p>
-    <form method="POST">
-        {% csrf_token %}
-        <input type="text" name="amount" placeholder="amount"><br>
-        <input type="text" name="desc" placeholder="desc"><br>
-        <input type="date" name="date">
-        <button type="submit">Add Transaction</button>
-    </form>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'core/styles.css' %}">
+{% endblock styles %}
+
+{% block title %}
+    Expenses | {{ user.username }}
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="logo">Spensely</h2>
+        <nav>
+            {% comment %}
+            <!-- {% url 'core:dashboard' %} -->
+            {% endcomment %}
+            <a href="#">Dashboard</a>
+            <a href="#" class="active">Expenses</a>
+            <a href="#">Investments</a>
+            <a href="#">Goals</a>
+            <a href="#">Profile</a>
+            <a href="#">Settings</a>
+        </nav>
+        <div class="sidebar-bottom">
+            <a href="#">Help & Support</a>
+            <a href="#">Logout</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Header -->
+        <header class="header">
+            <input type="text" placeholder="Search expenses, categories...">
+            <div class="profile">
+                <span class="notif">3</span>
+                <!-- <img src="{% static 'core/assets/user.png' %}" alt="Profile"> -->
+            </div>
+        </header>
+
+        <!-- Filters -->
+        <section class="filters">
+            <select>
+                <option value="">All Categories</option>
+                <option>Needs</option>
+                <option>Wants</option>
+                <option>Savings</option>
+            </select>
+
+            <select>
+                <option value="">All Dates</option>
+                <option>This Month</option>
+                <option>Last Month</option>
+                <option>This Year</option>
+            </select>
+
+            <!-- Trigger for add expense -->
+            <button class="btn-primary" onclick="document.getElementById('addExpenseForm').style.display='block'">+ Add Expense</button>
+        </section>
+
+        <!-- Add Expense Form -->
+        <section id="addExpenseForm" style="display:none; margin-top: 20px;">
+            <form method="POST" id="transactionAddForm">
+                {% csrf_token %}
+                <input type="text" name="desc" placeholder="Description" required>
+                <input type="number" name="amount" placeholder="Amount" required>
+                <input type="date" name="date" required>
+                <button type="submit" class="btn-primary" id="add-transaction-btn">Add Transaction</button>
+                <button type="button" class="btn-small btn-danger" onclick="this.parentElement.parentElement.style.display='none'">Cancel</button>
+            </form>
+        </section>
+
+        <!-- Expenses Table -->
+        <input type="hidden" id="csrf_token" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <section class="table-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in tObjects %}
+                    <tr>
+                        <td>{{ t.date }}</td>
+                        <td>{{ t.category|default:"-" }}</td>
+                        <td>{{ t.description }}</td>
+                        <td>₹{{ t.amount }}</td>
+                        <td>
+                            <button class="btn-small">Edit</button>
+                            <button class="btn-small btn-danger" data-id="{{t.id}}" >Delete</button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align:center;">No transactions found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'core/transaction.js' %}"></script>
+{% endblock %}
