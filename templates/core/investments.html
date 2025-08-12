@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'core/styles.css' %}">
+{% endblock styles %}
+
+{% block title %}
+    Investments | {{ user.username }}
+{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2 class="logo">Spensely</h2>
+            <nav>
+                <a href="#">Dashboard</a>
+                <a href="{% url 'core:transactions' %}">Expenses</a>
+                <a href="{% url 'core:investments' %}" class="active">Investments</a>
+                <a href="#">Goals</a>
+                <a href="#">Profile</a>
+                <a href="#">Settings</a>
+            </nav>
+            <div class="sidebar-bottom">
+                <a href="#">Help & Support</a>
+                <a href="#">Logout</a>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main>
+            <!-- Header -->
+            <header class="header">
+                <input type="text" placeholder="Search transactions, categories...">
+                <div class="profile">
+                    <span class="notif">3</span>
+                    <img src="assets/user.png" alt="Profile">
+                </div>
+            </header>
+
+            <!-- Investments Section -->
+            <section class="investments-section">
+                <div class="section-header">
+                    <h1>Investments</h1>
+                    <div>
+                        {# <button class="btn-secondary">View Reports</button> #}
+                        <button class="btn-primary">+ Add Investment</button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-cards">
+                    <div class="card">
+                        <h4>Total Invested</h4>
+                        <p class="amount">₹50,000</p>
+                    </div>
+                    <div class="card">
+                        <h4>Current Value</h4>
+                        <p class="amount">₹3,00,50,000</p>
+                    </div>
+                    <div class="card">
+                        <h4>Total Returns</h4>
+                        <p class="amount green">₹3,00,00,000 <span class="percent">+60000%</span></p>
+                    </div>
+                </div>
+
+                <!-- Portfolio Table -->
+                <div class="table-card">
+                    <h3>Your Portfolio</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Asset</th>
+                                <th>Invested</th>
+                                <th>Current Value</th>
+                                <th>Returns</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Gold</td>
+                                <td>₹50,000</td>
+                                <td>₹3,00,50,000</td>
+                                <td class="green">+60000%</td>
+                                <td><a href="#">Details</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn-secondary small">View All</button>
+                </div>
+            </section>
+        </main>
+    </div>
+{% endblock content %}
