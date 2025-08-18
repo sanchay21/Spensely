@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block styles %}
+{# <link rel="stylesheet" href="{% static 'core/styles.css' %}"> #}
 <link rel="stylesheet" href="{% static 'core/styles.css' %}">
 {% endblock styles %}
 
@@ -19,8 +20,8 @@
             <!-- {% url 'core:dashboard' %} -->
             {% endcomment %}
             <a href="#">Dashboard</a>
-            <a href="#" class="active">Expenses</a>
-            <a href="#">Investments</a>
+            <a href="{% url 'core:transactions' %}" class="active">Expenses</a>
+            <a href="{% url 'core:investments' %}">Investments</a>
             <a href="#">Goals</a>
             <a href="#">Profile</a>
             <a href="#">Settings</a>
@@ -46,9 +47,8 @@
         <section class="filters">
             <select>
                 <option value="">All Categories</option>
-                <option>Needs</option>
-                <option>Wants</option>
-                <option>Savings</option>
+                <option>Expense</option>
+                <option>Income</option>
             </select>
 
             <select>
@@ -59,11 +59,13 @@
             </select>
 
             <!-- Trigger for add expense -->
-            <button class="btn-primary" onclick="document.getElementById('addExpenseForm').style.display='block'">+ Add Expense</button>
+            <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+            + Add Expense
+            </button>
         </section>
 
         <!-- Add Expense Form -->
-        <section id="addExpenseForm" style="display:none; margin-top: 20px;">
+        <!-- <section id="addExpenseForm" style="display:none; margin-top: 20px;">
             <form method="POST" id="transactionAddForm">
                 {% csrf_token %}
                 <input type="text" name="desc" placeholder="Description" required>
@@ -72,8 +74,125 @@
                 <button type="submit" class="btn-primary" id="add-transaction-btn">Add Transaction</button>
                 <button type="button" class="btn-small btn-danger" onclick="this.parentElement.parentElement.style.display='none'">Cancel</button>
             </form>
-        </section>
+        </section> -->
+        <!-- Add Expense Modal -->
+        <div class="modal fade" id="addExpenseModal" tabindex="-1" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
 
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addExpenseModalLabel">Add Transaction</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="modal-body">
+                        <!-- 🔹 Here's the actual Django form -->
+                        <form method="POST" id="addTransactionForm">
+                        {% csrf_token %}
+
+                            <!-- Category -->
+                            <div class="mb-3">
+                                <label class="form-label">Category</label>
+                                <select name="category" class="form-select" required>
+                                    <option value="Expense">Expense</option>
+                                    <option value="Income">Income</option>
+                                </select>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <input type="text" id="description" name="description" class="form-control" placeholder="Enter description" required>
+                            </div>
+
+                            <!-- Amount -->
+                            <div class="mb-3">
+                                <label class="form-label">Amount</label>
+                                <input type="number" id="amount" name="amount" class="form-control" placeholder="Enter amount" required>
+                            </div>
+
+                            <!-- Date -->
+                            <div class="mb-3">
+                                <label class="form-label">Date</label>
+                                <input type="date" id="date" name="date" class="form-control" required>
+                            </div>
+
+                            <!-- Modal Footer inside form (so it submits) -->
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="this.blur()">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="add-transaction-btn">Add Transaction</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Modal -->
+        <div class="modal fade" id="editExpenseModal" tabindex="-1" aria-labelledby="editExpenseModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addExpenseModalLabel">Edit Transaction</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="modal-body">
+                        <!-- 🔹 Here's the actual Django form -->
+                        <form method="POST" id="editTransactionForm">
+                        {% csrf_token %}
+
+                            <!-- Category -->
+                            <div class="mb-3">
+                                <label class="form-label">Category</label>
+                                <select id="Editcategory" name="category" class="form-select" required>
+                                    <option value="Expense">Expense</option>
+                                    <option value="Income">Income</option>
+                                </select>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <input type="text" id="Editdescription" name="description" class="form-control" placeholder="Enter description" required>
+                            </div>
+
+                            <!-- Amount -->
+                            <div class="mb-3">
+                                <label class="form-label">Amount</label>
+                                <input type="number" id="Editamount" name="amount" class="form-control" placeholder="Enter amount" required>
+                            </div>
+
+                            <!-- Date -->
+                            <div class="mb-3">
+                                <label class="form-label">Date</label>
+                                <input type="date" id="Editdate" name="date" class="form-control" required>
+                            </div>
+
+                            <input type="hidden" id="editID" name="editID">
+
+                            <!-- Modal Footer inside form (so it submits) -->
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="this.blur()">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="edit-transaction-btn">
+                                    Edit
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+                
         <!-- Expenses Table -->
         <input type="hidden" id="csrf_token" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
         <section class="table-section">
@@ -81,8 +200,8 @@
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Category</th>
                         <th>Description</th>
+                        <th>Category</th>
                         <th>Amount</th>
                         <th>Actions</th>
                     </tr>
@@ -91,17 +210,25 @@
                     {% for t in tObjects %}
                     <tr>
                         <td>{{ t.date }}</td>
-                        <td>{{ t.category|default:"-" }}</td>
                         <td>{{ t.description }}</td>
-                        <td>₹{{ t.amount }}</td>
+                        <td>{{ t.category }}</td>
+                        {% if t.category == "Expense" %}
+                            <td style="color: red;">₹{{ t.amount }}</td>
+                        {% else %}
+                            <td style="color: green;">₹{{ t.amount }}</td>
+                        {% endif %}
                         <td>
-                            <button class="btn-small">Edit</button>
-                            <button class="btn-small btn-danger" data-id="{{t.id}}" >Delete</button>
+                            <button class="btn-small btn-edit" data-bs-toggle="modal" data-bs-target="#editExpenseModal"
+                             data-id="{{t.id}}" data-date="{{t.date}}" data-description="{{t.description}}"
+                             data-category="{{t.category}}" data-amount="{{t.amount}}">
+                                Edit
+                            </button>
+                            <button class="btn-small btn-delete" data-id="{{t.id}}">Delete</button>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" style="text-align:center;">No transactions found</td>
+                        <td colspan="5" style="text-align:center;" id="forNoTransactions">No transactions found</td>
                     </tr>
                     {% endfor %}
                 </tbody>
