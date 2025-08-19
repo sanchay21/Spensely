@@ -5,13 +5,16 @@ body {
 }
 
 .container {
-    display: flex;
+    display: flex !important;  /* force your flex layout */
+    max-width: 100% !important; /* prevent Bootstrap's max-width */
+    padding: 0 !important;      /* remove Bootstrap’s side padding */
+    margin: 0 !important;       /* remove Bootstrap’s centering margins */
 }
 
 .sidebar {
     background: white;
     padding: 20px;
-    width: 240px;
+    width: 200px;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -185,6 +188,12 @@ th, td {
     background: #d6dadf;
 }
 
+.btn-edit{
+    background-color: white;
+    color: black;
+    font-weight: bold;
+}
+
 .btn-danger {
     background: #dc3545;
     color: white;
@@ -192,6 +201,12 @@ th, td {
 
 .btn-danger:hover {
     background: #b02a37;
+}
+
+.btn-delete{
+    background: white;
+    color: rgb(177, 30, 30);
+    font-weight: bold;
 }
 
 
@@ -313,4 +328,74 @@ th, td {
 .btn-secondary.small {
     margin-top: 10px;
     padding: 5px 10px;
+}
+
+.table-card canvas {
+    max-width: 280px;   /* keep chart smaller */
+    margin: 0 auto;     /* center the chart */
+    display: block;
+}
+
+.table-card h3 {
+    margin-bottom: 15px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.dashboard-charts {
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+}
+
+.dashboard-chart-card {
+    background: blue;
+    padding: 20px;
+    border-radius: 10px;
+    flex: 1;
+
+}
+
+.dashboard-chart-card.large {
+    flex: 2;   /* ~70% width */
+}
+
+.dashboard-chart-card.small {
+    flex: 1;   /* ~30% width */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: red;
+}
+
+.dashboard-reminders {
+    margin-top: 20px;
+}
+
+.dashboard-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.reminder-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 15px 0;
+}
+
+.reminder-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+}
+
+.reminder-list li:last-child {
+    border-bottom: none;
+}
+
+.small-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
 }
