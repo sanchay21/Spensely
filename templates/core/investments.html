@@ -3,6 +3,8 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{% static 'core/styles.css' %}">
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock styles %}
 
 {% block title %}
@@ -15,7 +17,7 @@
         <aside class="sidebar">
             <h2 class="logo">Spensely</h2>
             <nav>
-                <a href="#">Dashboard</a>
+                <a href="{% url 'core:dashboard' %}">Dashboard</a>
                 <a href="{% url 'core:transactions' %}">Expenses</a>
                 <a href="{% url 'core:investments' %}" class="active">Investments</a>
                 <a href="#">Goals</a>
@@ -44,7 +46,6 @@
                 <div class="section-header">
                     <h1>Investments</h1>
                     <div>
-                        {# <button class="btn-secondary">View Reports</button> #}
                         <button class="btn-primary">+ Add Investment</button>
                     </div>
                 </div>
@@ -65,32 +66,90 @@
                     </div>
                 </div>
 
-                <!-- Portfolio Table -->
-                <div class="table-card">
-                    <h3>Your Portfolio</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Asset</th>
-                                <th>Invested</th>
-                                <th>Current Value</th>
-                                <th>Returns</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Gold</td>
-                                <td>₹50,000</td>
-                                <td>₹3,00,50,000</td>
-                                <td class="green">+60000%</td>
-                                <td><a href="#">Details</a></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button class="btn-secondary small">View All</button>
+                <!-- Chart + Portfolio side by side -->
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+                    
+                    <!-- Pie/Donut Chart -->
+                    <div class="table-card">
+                        <h3>Asset Distribution</h3>
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+
+                    <!-- Portfolio Table -->
+                    <div class="table-card">
+                        <h3>Your Portfolio</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Asset</th>
+                                    <th>Invested</th>
+                                    <th>Current Value</th>
+                                    <th>Returns</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Gold</td>
+                                    <td>₹50,000</td>
+                                    <td>₹3,00,50,000</td>
+                                    <td class="green">+60000%</td>
+                                    <td><a href="#">Details</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Stocks</td>
+                                    <td>₹1,50,000</td>
+                                    <td>₹2,00,000</td>
+                                    <td class="green">+33%</td>
+                                    <td><a href="#">Details</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Crypto</td>
+                                    <td>₹30,000</td>
+                                    <td>₹1,00,000</td>
+                                    <td class="green">+233%</td>
+                                    <td><a href="#">Details</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button class="btn-secondary small">View All</button>
+                    </div>
                 </div>
             </section>
         </main>
     </div>
+
+    <!-- Chart.js Script -->
+    <script>
+        const ctx = document.getElementById('distributionChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Gold', 'Stocks', 'Crypto'],
+                datasets: [{
+                    data: [300500, 200000, 100000], // Hardcoded values
+                    backgroundColor: ['#FFD700', '#36A2EB', '#FF6384'],
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 1900   // <-- 2 seconds animation
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ₹${context.raw.toLocaleString()}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 {% endblock content %}

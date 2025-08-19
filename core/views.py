@@ -7,6 +7,9 @@ import json
 def index(request):
     return HttpResponse("Hello Wolrd!!")
 
+def dashboard_view(request):
+    return render(request, 'core/dashboard.html')
+
 def transaction_view(request):
     """Render the HTML template for transactions"""
     tObjects = Transactions.objects.filter(user=request.user).order_by('-date')
