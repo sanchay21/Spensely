@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'core/styles.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock styles %}
+
+{% block title %}
+    Dashboard | {{ user.username }}
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="logo">Spensely</h2>
+        <nav>
+            <a href="{% url 'core:dashboard' %}" class="active">Dashboard</a>
+            <a href="{% url 'core:transactions' %}">Expenses</a>
+            <a href="{% url 'core:investments' %}">Investments</a>
+            <a href="goals.html">Goals</a>
+            <a href="profile.html">Profile</a>
+            <a href="settings.html">Settings</a>
+        </nav>
+        <div class="sidebar-bottom">
+            <a href="#">Help & Support</a>
+            <a href="#" onclick="if(confirm('Are you sure you want to logout?')) window.location.href='/authentication/login'">Logout</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Header -->
+        <header class="header">
+            <input type="text" placeholder="Search transactions, categories...">
+            <div class="profile">
+                <span class="notif">3</span>
+                <div class="profile-avatar">{{ user.username.0|upper }}</div>
+            </div>
+        </header>
+
+        <!-- Summary Section (Income & Expenses) -->
+        <section class="summary">
+            <div class="card income-card">
+                <div class="card-icon">💰</div>
+                <div class="card-content">
+                    <h3>Income</h3>
+                    <p class="amount">₹{{ monthly_income|floatformat:0 }}</p>
+                    <small class="change positive">This Month</small>
+                </div>
+            </div>
+            <div class="card expense-card">
+                <div class="card-icon">💸</div>
+                <div class="card-content">
+                    <h3>Expenses</h3>
+                    <p class="amount">₹{{ monthly_expenses|floatformat:0 }}</p>
+                    <small class="change negative">This Month</small>
+                </div>
+            </div>
+            <div class="card savings-card">
+                <div class="card-icon">🎯</div>
+                <div class="card-content">
+                    <h3>Balance</h3>
+                    <p class="amount">₹{{ balance|floatformat:0 }}</p>
+                    <small class="change">Available</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- Spending Trends & AI Insights -->
+        <section class="dashboard-charts">
+            <div class="dashboard-chart-card large">
+                <div class="chart-header">
+                    <h3>Spending Trends</h3>
+                    <div class="toggle-buttons">
+                        <button class="toggle-btn active" data-period="monthly">Monthly</button>
+                        <button class="toggle-btn" data-period="weekly">Weekly</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="spendingChart"></canvas>
+                </div>
+                <div class="chart-loading" id="chartLoading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>Loading chart data...</p>
+                </div>
+            </div>
+
+            <div class="dashboard-chart-card small">
+                <h3>AI Insights</h3>
+                <div id="ai-insights-content">
+                    <p id="ai-insights">Get personalized financial advice based on your spending patterns.</p>
+                    <div id="insights-loading" class="insights-loading" style="display: none;">
+                        <div class="loading-spinner"></div>
+                        <p>Generating insights...</p>
+                    </div>
+                </div>
+                <button class="btn-primary" id="generate-insights">
+                    <span class="btn-icon">🤖</span> Generate Insights
+                </button>
+            </div>
+        </section>
+
+        <!-- Reminders + Investment Opportunities -->
+        <section class="dashboard-charts" style="margin-top: 20px;">
+            <div class="dashboard-chart-card large">
+                <div class="chart-header">
+                    <h3>Reminders</h3>
+                    <button class="btn-primary small-btn" id="add-reminder-btn">
+                        <span class="btn-icon">➕</span> Add Reminder
+                    </button>
+                </div>
+                <div class="reminders-container">
+                    <ul class="reminder-list" id="reminder-list">
+                        {% for reminder in reminders %}
+                        <li class="reminder-item {{ reminder.done|yesno:'completed,pending' }}" data-id="{{ reminder.id }}">
+                            <div class="reminder-content">
+                                <div class="reminder-text">
+                                    <span class="reminder-icon">📋</span>
+                                    <span class="reminder-title">{{ reminder.title }}</span>
+                                    {% if reminder.due_date %}
+                                        <span class="reminder-date">– {{ reminder.due_date|date:'M d' }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="reminder-actions">
+                                    <button class="reminder-toggle" onclick="toggleReminder({{ reminder.id }})">
+                                        {% if reminder.done %}✅{% else %}⭕{% endif %}
+                                    </button>
+                                    <button class="reminder-delete" onclick="deleteReminder({{ reminder.id }})">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        {% empty %}
+                        <li class="no-reminders">
+                            <p>No reminders yet. Add your first reminder!</p>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dashboard-chart-card small investment-opp">
+                <h3>Investment Opportunities</h3>
+                <div class="investment-content">
+                    <div class="investment-icon">📈</div>
+                    <p>Discover curated investment ideas based on your spending & savings.</p>
+                    <div class="investment-stats">
+                        <div class="stat">
+                            <span class="stat-label">Available for Investment</span>
+                            <span class="stat-value">₹{{ balance|floatformat:0 }}</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="window.location.href='{% url 'core:investments' %}'">
+                    <span class="btn-icon">💎</span> View Opportunities
+                </button>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- Add Reminder Modal -->
+<div id="reminderModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Add New Reminder</h3>
+            <button class="modal-close" id="closeModal">&times;</button>
+        </div>
+        <form id="reminderForm">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="reminderTitle">Title *</label>
+                <input type="text" id="reminderTitle" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="reminderDate">Due Date</label>
+                <input type="date" id="reminderDate" name="due_date">
+            </div>
+            <div class="form-group">
+                <label for="reminderNotes">Notes</label>
+                <textarea id="reminderNotes" name="notes" rows="3"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" id="cancelModal">Cancel</button>
+                <button type="submit" class="btn-primary">Add Reminder</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Initialize dashboard with data from Django
+const dashboardData = {
+    spendingData: {{ spending_data|safe }},
+    monthsData: {{ months_data|safe }},
+    monthlyIncome: {{ monthly_income }},
+    monthlyExpenses: {{ monthly_expenses }}
+};
+</script>
+<script src="{% static 'core/dashboard.js' %}"></script>
+{% endblock content %}

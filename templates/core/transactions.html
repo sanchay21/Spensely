@@ -19,7 +19,7 @@
             {% comment %}
             <!-- {% url 'core:dashboard' %} -->
             {% endcomment %}
-            <a href="#">Dashboard</a>
+            <a href="{% url 'core:dashboard' %}">Dashboard</a>
             <a href="{% url 'core:transactions' %}" class="active">Expenses</a>
             <a href="{% url 'core:investments' %}">Investments</a>
             <a href="#">Goals</a>
@@ -59,8 +59,8 @@
             </select>
 
             <!-- Trigger for add expense -->
-            <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
-            + Add Expense
+            <button class="btn-primary" id="add-transaction-trigger">
+                + Add Transaction
             </button>
         </section>
 
@@ -75,121 +75,76 @@
                 <button type="button" class="btn-small btn-danger" onclick="this.parentElement.parentElement.style.display='none'">Cancel</button>
             </form>
         </section> -->
-        <!-- Add Expense Modal -->
-        <div class="modal fade" id="addExpenseModal" tabindex="-1" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addExpenseModalLabel">Add Transaction</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-
-                    <!-- Modal Body -->
-                    <div class="modal-body">
-                        <!-- 🔹 Here's the actual Django form -->
-                        <form method="POST" id="addTransactionForm">
-                        {% csrf_token %}
-
-                            <!-- Category -->
-                            <div class="mb-3">
-                                <label class="form-label">Category</label>
-                                <select name="category" class="form-select" required>
-                                    <option value="Expense">Expense</option>
-                                    <option value="Income">Income</option>
-                                </select>
-                            </div>
-
-                            <!-- Description -->
-                            <div class="mb-3">
-                                <label class="form-label">Description</label>
-                                <input type="text" id="description" name="description" class="form-control" placeholder="Enter description" required>
-                            </div>
-
-                            <!-- Amount -->
-                            <div class="mb-3">
-                                <label class="form-label">Amount</label>
-                                <input type="number" id="amount" name="amount" class="form-control" placeholder="Enter amount" required>
-                            </div>
-
-                            <!-- Date -->
-                            <div class="mb-3">
-                                <label class="form-label">Date</label>
-                                <input type="date" id="date" name="date" class="form-control" required>
-                            </div>
-
-                            <!-- Modal Footer inside form (so it submits) -->
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="this.blur()">
-                                    Cancel
-                                </button>
-                                <button type="submit" class="btn btn-primary" id="add-transaction-btn">Add Transaction</button>
-                            </div>
-                        </form>
-                    </div>
+        <!-- Add Transaction Modal -->
+        <div id="addTransactionModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Add New Transaction</h3>
+                    <button class="modal-close" id="closeAddModal">&times;</button>
                 </div>
+                <form id="addTransactionForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="addCategory">Category *</label>
+                        <select id="addCategory" name="category" required>
+                            <option value="Expense">Expense</option>
+                            <option value="Income">Income</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="addDescription">Description *</label>
+                        <input type="text" id="addDescription" name="description" placeholder="Enter description" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addAmount">Amount *</label>
+                        <input type="number" id="addAmount" name="amount" step="0.01" placeholder="Enter amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addDate">Date *</label>
+                        <input type="date" id="addDate" name="date" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" id="cancelAddModal">Cancel</button>
+                        <button type="submit" class="btn-primary">Add Transaction</button>
+                    </div>
+                </form>
             </div>
         </div>
 
-        <!-- Edit Modal -->
-        <div class="modal fade" id="editExpenseModal" tabindex="-1" aria-labelledby="editExpenseModal" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addExpenseModalLabel">Edit Transaction</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-
-                    <!-- Modal Body -->
-                    <div class="modal-body">
-                        <!-- 🔹 Here's the actual Django form -->
-                        <form method="POST" id="editTransactionForm">
-                        {% csrf_token %}
-
-                            <!-- Category -->
-                            <div class="mb-3">
-                                <label class="form-label">Category</label>
-                                <select id="Editcategory" name="category" class="form-select" required>
-                                    <option value="Expense">Expense</option>
-                                    <option value="Income">Income</option>
-                                </select>
-                            </div>
-
-                            <!-- Description -->
-                            <div class="mb-3">
-                                <label class="form-label">Description</label>
-                                <input type="text" id="Editdescription" name="description" class="form-control" placeholder="Enter description" required>
-                            </div>
-
-                            <!-- Amount -->
-                            <div class="mb-3">
-                                <label class="form-label">Amount</label>
-                                <input type="number" id="Editamount" name="amount" class="form-control" placeholder="Enter amount" required>
-                            </div>
-
-                            <!-- Date -->
-                            <div class="mb-3">
-                                <label class="form-label">Date</label>
-                                <input type="date" id="Editdate" name="date" class="form-control" required>
-                            </div>
-
-                            <input type="hidden" id="editID" name="editID">
-
-                            <!-- Modal Footer inside form (so it submits) -->
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="this.blur()">
-                                    Cancel
-                                </button>
-                                <button type="submit" class="btn btn-primary" id="edit-transaction-btn">
-                                    Edit
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+        <!-- Edit Transaction Modal -->
+        <div id="editTransactionModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Edit Transaction</h3>
+                    <button class="modal-close" id="closeEditModal">&times;</button>
                 </div>
+                <form id="editTransactionForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="editCategory">Category *</label>
+                        <select id="editCategory" name="category" required>
+                            <option value="Expense">Expense</option>
+                            <option value="Income">Income</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription">Description *</label>
+                        <input type="text" id="editDescription" name="description" placeholder="Enter description" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAmount">Amount *</label>
+                        <input type="number" id="editAmount" name="amount" step="0.01" placeholder="Enter amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDate">Date *</label>
+                        <input type="date" id="editDate" name="date" required>
+                    </div>
+                    <input type="hidden" id="editID" name="editID">
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" id="cancelEditModal">Cancel</button>
+                        <button type="submit" class="btn-primary">Update Transaction</button>
+                    </div>
+                </form>
             </div>
         </div>
                 
@@ -218,7 +173,7 @@
                             <td style="color: green;">₹{{ t.amount }}</td>
                         {% endif %}
                         <td>
-                            <button class="btn-small btn-edit" data-bs-toggle="modal" data-bs-target="#editExpenseModal"
+                            <button class="btn-small btn-edit" 
                              data-id="{{t.id}}" data-date="{{t.date}}" data-description="{{t.description}}"
                              data-category="{{t.category}}" data-amount="{{t.amount}}">
                                 Edit

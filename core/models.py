@@ -10,8 +10,26 @@ class Transactions(models.Model):
     description = models.TextField()
     date = models.DateField()
 
+    class Meta:
+        ordering = ['-date']
+
+
     def __str__(self):
         return f"{self.user.username} - rs {self.amount} on {self.date}"
+
+class Reminder(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reminders')
+    title = models.CharField(max_length=200)
+    due_date = models.DateField(null=True, blank=True)
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    done = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-due_date', '-created_at']
+
+    def __str__(self):
+        return f"{self.title} ({self.user})"
 
 class Investments(models.Model):
     ASSET_TYPES = [

@@ -54,15 +54,15 @@
                 <div class="stats-cards">
                     <div class="card">
                         <h4>Total Invested</h4>
-                        <p class="amount">₹50,000</p>
+                        <p class="amount">₹{{ total_invested }}</p>
                     </div>
                     <div class="card">
                         <h4>Current Value</h4>
-                        <p class="amount">₹3,00,50,000</p>
+                        <p class="amount">₹{{ total_current }}</p>
                     </div>
                     <div class="card">
                         <h4>Total Returns</h4>
-                        <p class="amount green">₹3,00,00,000 <span class="percent">+60000%</span></p>
+                        <p class="amount green">₹{{ total_returns }} <span class="percent"> +{{ total_return_pct }}%</span></p>
                     </div>
                 </div>
 
@@ -89,27 +89,14 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for inv in investments %}
                                 <tr>
-                                    <td>Gold</td>
-                                    <td>₹50,000</td>
-                                    <td>₹3,00,50,000</td>
-                                    <td class="green">+60000%</td>
-                                    <td><a href="#">Details</a></td>
+                                    <td>{{ inv.symbol }}</td>
+                                    <td>₹{{ inv.invested }}</td>
+                                    <td>₹{{ inv.current_value }}</td>
+                                    <td>{{ inv.returns }}%</td>
                                 </tr>
-                                <tr>
-                                    <td>Stocks</td>
-                                    <td>₹1,50,000</td>
-                                    <td>₹2,00,000</td>
-                                    <td class="green">+33%</td>
-                                    <td><a href="#">Details</a></td>
-                                </tr>
-                                <tr>
-                                    <td>Crypto</td>
-                                    <td>₹30,000</td>
-                                    <td>₹1,00,000</td>
-                                    <td class="green">+233%</td>
-                                    <td><a href="#">Details</a></td>
-                                </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                         <button class="btn-secondary small">View All</button>
