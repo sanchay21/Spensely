@@ -128,4 +128,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Google Gemini API Configuration
 # Add your Gemini API key here or use environment variable
-GOOGLE_API_KEY = 'AIzaSyBpN_90MR3Rod84x_9_tCXJmqvGWDN4W9Y'  # Replace with your actual API key
+GOOGLE_API_KEY = ''  # Replace with your actual API key
